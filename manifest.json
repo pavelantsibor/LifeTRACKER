@@ -1,8 +1,9 @@
 {
-  "name": "LifeTrack — Трекер Привычек",
-  "short_name": "LifeTrack",
+  "id": "./lifetrack-v2",
+  "name": "LifeTrack Next — Трекер Привычек",
+  "short_name": "LifeTrack Next",
   "description": "Геймифицированный трекер привычек с системой достижений и уровней",
-  "start_url": "./?source=pwa",
+  "start_url": "./index.html?source=pwa_v2",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0f1412",
