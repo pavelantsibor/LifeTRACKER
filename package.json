@@ -1,0 +1,33 @@
+{
+  "name": "lifetrack-app",
+  "version": "1.0.0",
+  "description": "Геймифицированный трекер привычек",
+  "main": "index.html",
+  "scripts": {
+    "start": "cordova run android",
+    "build": "cordova build android --release",
+    "build-debug": "cordova build android"
+  },
+  "keywords": [
+    "habit",
+    "tracker",
+    "gamification",
+    "productivity"
+  ],
+  "author": "LifeTrack Team",
+  "license": "MIT",
+  "devDependencies": {
+    "cordova": "^12.0.0",
+    "cordova-android": "^12.0.0"
+  },
+  "cordova": {
+    "platforms": [
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-whitelist": {}
+    }
+  }
+}
+

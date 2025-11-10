@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#232323">
+    <meta name="application-name" content="LifeTrack">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LifeTrack">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" sizes="192x192" href="icon-192.png" type="image/png">
+    <link rel="icon" sizes="512x512" href="icon-512.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>LifeTrack - Трекер Привычек</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <canvas id="bgParticles" class="background-particles" aria-hidden="true"></canvas>
+        <!-- HERO SCREEN - Главный экран -->
+        <section class="hero" id="heroScreen">
+            <div class="hero-inner">
+                <div class="hero-logo">
+                    <div class="animated-logo" id="animatedLogo">
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#D8FF9A;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#A8D878;stop-opacity:1" />
+                                </linearGradient>
+                                <filter id="glow">
+                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <path id="morphPath" fill="url(#logoGradient)" filter="url(#glow)"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="hero-title-wrapper">
+                    <h1 class="hero-title" id="heroTitle">
+                        Создаю свою<br><strong>лучшую версию</strong>
+                    </h1>
+                </div>
+                <p class="hero-subtitle">
+                    Выбираю быть лучше каждый день. Мой прогресс - моё вдохновение
+                </p>
+                <div class="hero-actions">
+                    <button class="hero-btn primary" id="startBtn">
+                        Хочу начать
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button class="hero-btn ghost" id="learnMoreBtn">
+                        Узнать больше
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN SCREEN - Комплексный Dashboard -->
+        <section class="main-screen hidden" id="mainScreen">
+            <div class="screen-header">
+                <button class="profile-trigger" id="profileOpenBtn" aria-label="Профиль">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </button>
+                <h1 class="screen-title">То, что я выбираю<br>сегодня</h1>
+                <div class="daily-overview" id="dailyOverview">
+                    <div class="daily-date">
+                        <span class="daily-day" id="dailyDay">Понедельник</span>
+                        <span class="daily-date-text" id="dailyDate">12 августа 2025</span>
+                    </div>
+                    <div class="daily-quote" id="dailyQuote">«Сегодня я выбираю себя и своё движение вперёд.»</div>
+                </div>
+
+                <!-- Вкладки для разделов -->
+                <div class="main-tabs">
+                    <button class="main-tab active" data-tab="trackers" aria-label="Трекеры">
+                        <img src="treker.png" alt="Трекеры">
+                    </button>
+                    <button class="main-tab" data-tab="analytics" aria-label="Аналитика">
+                        <img src="analitik.png" alt="Аналитика">
+                    </button>
+                    <button class="main-tab" data-tab="achievements" aria-label="Достижения">
+                        <img src="dostijenia.png" alt="Достижения">
+                    </button>
+                    <button class="main-tab" data-tab="journal" aria-label="Дневник">
+                        <img src="dnevnik.png" alt="Дневник">
+                    </button>
+                </div>
+            </div>
+
+            <!-- Контент разделов -->
+            <div class="tab-content">
+                <!-- ТРЕКЕРЫ -->
+                <div class="tab-panel active" id="trackersPanel">
+                    <div class="trackers-board">
+                        <div class="trackers-toolbar">
+                            <div class="trackers-info">
+                                <h2 class="trackers-heading">Виджеты дня</h2>
+                                <p class="trackers-subheading">Собираю под себя трекеры, цели и мысли</p>
+                            </div>
+                            <div class="trackers-actions">
+                                <button class="chip-btn ghost" id="toggleWidgetEdit">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 9h16M4 15h16M9 4v16M15 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Изменить
+                                </button>
+                                <button class="chip-btn primary" id="addWidgetBtn">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                    </svg>
+                                    Новый виджет
+                                </button>
+                            </div>
+                        </div>
+                        <div class="widget-grid" id="widgetGrid"></div>
+                        <div class="widget-empty hidden" id="widgetEmptyState">
+                            <div class="widget-empty-icon">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                </svg>
+                            </div>
+                            <h3>Пока пусто</h3>
+                            <p>Добавьте первый виджет, чтобы настроить свой день</p>
+                            <button class="chip-btn primary" id="widgetEmptyAdd">Создать виджет</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- АНАЛИТИКА -->
+                <div class="tab-panel" id="analyticsPanel">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon accent-icon" aria-hidden="true">
+                                <img src="analitik_w.png" alt="">
+                            </div>
+                            <div class="stat-value">73%</div>
+                            <div class="stat-label">Средний прогресс</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon accent-icon" aria-hidden="true">
+                                <img src="ideal_w.png" alt="">
+                            </div>
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Дней подряд</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon accent-icon" aria-hidden="true">
+                                <img src="dostijenia_w.png" alt="">
+                            </div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Идеальных дней</div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Динамика прогресса</h3>
+                            <div class="chart-controls">
+                                <div class="chart-select">
+                                    <select id="progressMetricSelect" aria-label="Выбор показателя"></select>
+                                    <span class="chart-select-caret" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="progressChart"></div>
+                    </div>
+                    <div class="calendar-card">
+                        <div class="calendar-header">
+                            <h3>Календарь моих выборов</h3>
+                            <div class="calendar-nav">
+                                <button class="calendar-btn" id="calendarPrev" aria-label="Предыдущий месяц">‹</button>
+                                <span class="calendar-month" id="calendarMonthLabel"></span>
+                                <button class="calendar-btn" id="calendarNext" aria-label="Следующий месяц">›</button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid calendar-weekdays">
+                            <span>Пн</span>
+                            <span>Вт</span>
+                            <span>Ср</span>
+                            <span>Чт</span>
+                            <span>Пт</span>
+                            <span>Сб</span>
+                            <span>Вс</span>
+                        </div>
+                        <div class="calendar-grid" id="analyticsCalendar"></div>
+                        <div class="calendar-legend">
+                            <span><span class="legend-square level-0"></span>нет данных</span>
+                            <span><span class="legend-square level-1"></span>начало</span>
+                            <span><span class="legend-square level-2"></span>устойчиво</span>
+                            <span><span class="legend-square level-3"></span>в потоке</span>
+                            <span><span class="legend-square level-4"></span>легенда</span>
+                        </div>
+                        <div class="calendar-details" id="calendarDayDetails">Выберите день, чтобы увидеть детали.</div>
+                    </div>
+                </div>
+
+                <!-- ДОСТИЖЕНИЯ -->
+                <div class="tab-panel" id="achievementsPanel">
+                    <div class="achievements-overview">
+                        <div class="progress-card achievements-level-card">
+                            <h3 class="progress-title">Мой уровень</h3>
+                            <div class="progress-circle">
+                                <svg class="progress-ring" viewBox="0 0 100 100">
+                                    <circle class="progress-ring-bg" cx="50" cy="50" r="40"></circle>
+                                    <circle class="progress-ring-fill" cx="50" cy="50" r="40"></circle>
+                                </svg>
+                                <div class="progress-value">1</div>
+                            </div>
+                            <p class="progress-text">0 / 100 XP</p>
+                        </div>
+                    </div>
+                    <div class="achievements-grid"></div>
+                </div>
+
+                <!-- ДНЕВНИК -->
+                <div class="tab-panel" id="journalPanel">
+                    <button class="add-entry-btn" id="addJournalEntry">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        Хочу поделиться
+                    </button>
+                    <div class="journal-entries" id="journalEntries">
+                        <div class="journal-entry">
+                            <div class="entry-date">Сегодня, 14:30</div>
+                            <div class="entry-content">Выбрал всё, что хотел сегодня! Чувствую прилив энергии и гордость за себя.</div>
+                        </div>
+                        <div class="journal-entry">
+                            <div class="entry-date">Вчера, 20:15</div>
+                            <div class="entry-content">Медитация - это то, что я выбираю для себя. Она помогает мне быть спокойнее.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ПРОФИЛЬ -->
+                <div class="tab-panel" id="profilePanel">
+                    <div class="profile-header">
+                        <button type="button" class="profile-avatar-btn" id="avatarUploadBtn">
+                            <div class="profile-avatar" id="profileAvatar">
+                                <span class="profile-avatar-initials">Я</span>
+                            </div>
+                            <span class="profile-avatar-label" id="profileAvatarLabel">Добавить фото</span>
+                        </button>
+                        <h2 class="profile-name">Пользователь</h2>
+                        <button type="button" class="profile-rename-btn" id="profileRenameBtn">Изменить имя</button>
+                        <p class="profile-level">Уровень 1 • 0 / 100 XP</p>
+                    </div>
+                    <input type="file" id="avatarInput" class="hidden-input" accept="image/*">
+                    <div class="profile-stats" id="profileStats"></div>
+                    <div class="profile-actions" id="profileActions">
+                        <button type="button" class="profile-action" data-action="settings">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19.14 12.94c.03-.31.05-.63.05-.94s-.02-.63-.05-.94l2.03-1.58a1 1 0 0 0 .25-1.31l-1.92-3.32a1 1 0 0 0-1.21-.44l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54A1 1 0 0 0 14.4 2h-4.8a1 1 0 0 0-.97.81l-.36 2.54a7.03 7.03 0 0 0-1.62.94l-2.39-.96a1 1 0 0 0-1.21.44L1.95 8.17a1 1 0 0 0 .25 1.31l2.03 1.58c-.03.31-.05.63-.05.94s.02.63.05.94l-2.03 1.58a1 1 0 0 0-.25 1.31l1.92 3.32a1 1 0 0 0 1.21.44l2.39-.96c.49.38 1.03.7 1.62.94l.36 2.54A1 1 0 0 0 9.6 22h4.8a1 1 0 0 0 .97-.81l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96a1 1 0 0 0 1.21-.44l1.92-3.32a1 1 0 0 0-.25-1.31l-2.03-1.58zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>
+                            </svg>
+                            <span>Настройки</span>
+                        </button>
+                        <button type="button" class="profile-action" data-action="theme">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 2c.34 0 .68.03 1 .08V11h5.92c.05.32.08.66.08 1 0 3.86-3.14 7-7 7s-7-3.14-7-7 3.14-7 7-7z"/>
+                            </svg>
+                            <span>Цвет приложения</span>
+                        </button>
+                        <button type="button" class="profile-action" data-action="share">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 16.08a2.92 2.92 0 0 0-1.96.77l-7.13-3.73a3 3 0 0 0 0-1.24l7.03-3.67A3 3 0 1 0 18 5a3 3 0 0 0-2.96 3.72l-7.03 3.67a3 3 0 1 0 0 4l7.13 3.73A3 3 0 1 0 18 16.08z"/>
+                            </svg>
+                            <span>Поделиться</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL: Добавить привычку -->
+    <div class="modal hidden" id="addHabitModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Что я хочу выбрать?</h2>
+                <button class="modal-close" id="closeAddHabitModal">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="addHabitForm">
+                <div class="form-group">
+                    <label class="form-label">Название</label>
+                    <input type="text" class="form-input" id="habitName" placeholder="Например: Хочу пить больше воды" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Иконка</label>
+                    <div class="icon-picker" id="iconPicker">
+                        <button type="button" class="icon-option selected" data-icon="water">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                            </svg>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="meditation">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2s2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8-8c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2s.9 2 2 2h4c1.1 0 2-.9 2-2zM4 12c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2s-.9-2-2-2H6c-1.1 0-2 .9-2 2z"/>
+                            </svg>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="exercise">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                            </svg>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="reading">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>
+                            </svg>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="sleep">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.06 7 9.54 0 4.48-2.94 8.27-7 9.54.95.3 1.95.46 3 .46 5.52 0 10-4.48 10-10S14.52 2 9 2z"/>
+                            </svg>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="food">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Тип отслеживания</label>
+                    <select class="form-select" id="habitType">
+                        <option value="boolean">Да/Нет (выполнено или нет)</option>
+                        <option value="numeric">Числовое (количество)</option>
+                        <option value="duration">Длительность (минуты)</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="targetGroup">
+                    <label class="form-label">Целевое значение</label>
+                    <input type="number" class="form-input" id="habitTarget" min="1" placeholder="Например: 8">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Категория</label>
+                    <select class="form-select" id="habitCategory">
+                        <option value="day">День</option>
+                        <option value="morning">Утро</option>
+                        <option value="evening">Вечер</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Единица измерения</label>
+                    <input type="text" class="form-input" id="habitUnit" placeholder="Например: стаканов, минут, страниц">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelAddHabit">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Выбираю это</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Обновить привычку -->
+    <div class="modal hidden" id="updateHabitModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="updateHabitTitle"></h2>
+                <button class="modal-close" id="closeUpdateHabitModal">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="updateHabitForm">
+                <div class="form-group" id="booleanUpdate">
+                    <div class="habit-actions">
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <div class="habit-checkbox" data-completed="true">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                            </div>
+                            <span class="habit-label">Выполнено</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group hidden" id="numericUpdate">
+                    <label class="form-label">Текущее значение</label>
+                    <input type="number" class="form-input" id="currentValue" min="0" value="0">
+                    <p class="habit-subtitle" id="habitProgressText" style="margin-top: 8px;">0 / 0</p>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" id="deleteHabitBtn" style="background: rgba(220, 53, 69, 0.2); color: #dc3545; border-color: rgba(220, 53, 69, 0.3);">Удалить</button>
+                    <button type="button" class="btn btn-secondary" id="cancelUpdateHabit">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Добавить запись в дневник -->
+    <div class="modal hidden" id="addJournalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Хочу поделиться</h2>
+                <button class="modal-close" id="closeJournalModal">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="addJournalForm">
+                <div class="form-group">
+                    <label class="form-label">Мои мысли</label>
+                    <textarea class="form-input form-textarea" id="journalContent" rows="6" placeholder="Что я чувствую, что я выбрал сегодня, чем горжусь..." required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelJournal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Виджеты -->
+    <div class="modal hidden" id="widgetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="widgetModalTitle">Новый виджет</h2>
+                <button class="modal-close" id="closeWidgetModal">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="widgetForm">
+                <input type="hidden" id="widgetId">
+                <div class="form-group">
+                    <label class="form-label">Название</label>
+                    <input type="text" class="form-input" id="widgetTitle" placeholder="Например: Качество сна" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Тип виджета</label>
+                    <select class="form-select" id="widgetType" required>
+                        <option value="checklist">Чек-лист</option>
+                        <option value="rating">Оценка по шкале</option>
+                        <option value="checkbox">Переключатель</option>
+                        <option value="counter">Счётчик</option>
+                        <option value="timer">Таймер</option>
+                        <option value="note">Запись / мысль</option>
+                    </select>
+                    <p class="form-helper">Подбираю формат отслеживания под задачу</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Оформление</label>
+                    <div class="color-picker" id="widgetColorPicker">
+                        <button type="button" class="color-chip selected" data-color="green" title="Цвет приложения"></button>
+                        <button type="button" class="color-chip" data-color="light" title="Светлый"></button>
+                        <button type="button" class="color-chip" data-color="dark" title="Тёмный"></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ширина</label>
+                    <p class="form-helper">Измените ширину в режиме «Изменить»</p>
+                    <input type="hidden" id="widgetSpan" value="2">
+                </div>
+                <div class="form-group widget-options" data-type="checklist">
+                    <label class="form-label">Пункты (каждый с новой строки)</label>
+                    <textarea class="form-input form-textarea" id="widgetChecklistItems" rows="4" placeholder="Главная цель
+Важное дело
+Поддерживающая привычка"></textarea>
+                </div>
+                <div class="form-group widget-options hidden" data-type="rating">
+                    <label class="form-label">Границы шкалы</label>
+                    <div class="grid-two">
+                        <div>
+                            <span class="input-label">Минимум</span>
+                            <input type="number" class="form-input" id="widgetRatingMin" min="0" value="1">
+                        </div>
+                        <div>
+                            <span class="input-label">Максимум</span>
+                            <input type="number" class="form-input" id="widgetRatingMax" min="1" value="10">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group widget-options hidden" data-type="counter">
+                    <label class="form-label">Параметры счётчика</label>
+                    <div class="grid-two">
+                        <div>
+                            <span class="input-label">Единица</span>
+                            <input type="text" class="form-input" id="widgetCounterUnit" placeholder="стаканов">
+                        </div>
+                        <div>
+                            <span class="input-label">Цель (опционально)</span>
+                            <input type="number" class="form-input" id="widgetCounterTarget" min="0" placeholder="8">
+                        </div>
+                    </div>
+                    <div class="grid-two">
+                        <div>
+                            <span class="input-label">Шаг</span>
+                            <input type="number" class="form-input" id="widgetCounterStep" min="1" value="1">
+                        </div>
+                        <div>
+                            <span class="input-label">Начальное значение</span>
+                            <input type="number" class="form-input" id="widgetCounterStart" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group widget-options hidden" data-type="timer">
+                    <label class="form-label">Настройки таймера</label>
+                    <div class="grid-two">
+                        <div>
+                            <span class="input-label">Цель, мин (опционально)</span>
+                            <input type="number" class="form-input" id="widgetTimerTarget" min="0" placeholder="20">
+                        </div>
+                        <div>
+                            <span class="input-label">Шаг кнопок, мин</span>
+                            <input type="number" class="form-input" id="widgetTimerStep" min="1" value="5">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group widget-options hidden" data-type="note">
+                    <label class="form-label">Начальный текст</label>
+                    <textarea class="form-input form-textarea" id="widgetNoteText" rows="4" placeholder="Моя мысль или аффирмация на день"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger hidden" id="widgetDeleteBtn">Удалить</button>
+                    <button type="button" class="btn btn-secondary" id="cancelWidgetModal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION -->
+    <div class="notification hidden" id="notification">
+        <div class="notification-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+        </div>
+        <span class="notification-text" id="notificationText"></span>
+    </div>
+
+    <div class="modal hidden" id="settingsModal">
+        <div class="modal-content settings-modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Настройки</h2>
+                <button type="button" class="modal-close" id="closeSettingsModalBtn">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="settings-group">
+                <div class="settings-group-row">
+                    <div>
+                        <div class="settings-group-title">Уведомления</div>
+                        <div class="settings-group-subtitle">Напоминать о целях и ежедневных выборах</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notificationsToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="settings-group" id="settingsThemeSection">
+                <div class="settings-group-title">Цвет приложения</div>
+                <div class="settings-group-subtitle">Выберите настроение из готовых тем</div>
+                <div class="theme-chips" id="themeChips"></div>
+            </div>
+            <div class="settings-group">
+                <div class="settings-group-title">Профиль</div>
+                <div class="settings-group-subtitle">Управляйте своим образом и данными</div>
+                <div class="settings-actions">
+                    <button type="button" class="btn-secondary" id="removeAvatarBtn">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1z"/>
+                        </svg>
+                        <span>Удалить фото профиля</span>
+                    </button>
+                    <button type="button" class="btn-secondary" id="exportDataBtn">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 14-4-4h3V7h2v6h3l-4 4z"/>
+                        </svg>
+                        <span>Экспорт данных</span>
+                    </button>
+                    <button type="button" class="btn-secondary" id="resetProgressBtn">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6 0 1.5-.55 2.87-1.46 3.93l1.46 1.46C19.07 17.79 20 15.99 20 14c0-4.42-3.58-8-8-8zm-6.54.07L4 6.53C4.93 7.79 5.86 9.59 5.86 11.58c0 4.42 3.58 8 8 8v4l5-5-5-5v4c-3.31 0-6-2.69-6-6 0-1.5.55-2.87 1.46-3.93z"/>
+                        </svg>
+                        <span>Сбросить прогресс</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="closeSettingsModal">Готово</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator && ['http:', 'https:'].includes(window.location.protocol)) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW registration failed', err));
+            });
+        }
+    </script>
+</body>
+</html>
