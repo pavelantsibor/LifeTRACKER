@@ -127,26 +127,6 @@ const DAILY_QUOTES = [
     'Я выбираю баланс: энергия, внимание, забота.'
 ];
 
-const PERFORMANCE_PROFILE = (() => {
-    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
-        return { prefersReducedMotion: false, isLowPower: false, isTouch: false };
-    }
-    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
-    const hardwareConcurrency = typeof navigator.hardwareConcurrency === 'number' ? navigator.hardwareConcurrency : 4;
-    const deviceMemory = typeof navigator.deviceMemory === 'number' ? navigator.deviceMemory : 4;
-    const maxTouchPoints = typeof navigator.maxTouchPoints === 'number' ? navigator.maxTouchPoints : 0;
-    const isTouch = 'ontouchstart' in window || maxTouchPoints > 0;
-    const isLowPower = prefersReducedMotion || hardwareConcurrency <= 4 || deviceMemory <= 3;
-    return { prefersReducedMotion, isLowPower, isTouch };
-})();
-
-const DEBUG_UI = Boolean(
-    typeof window !== 'undefined' &&
-    window.localStorage &&
-    window.localStorage.getItem('lifetrack_debug_ui') === '1'
-);
-const ENABLE_GLASS_DEBUG = false;
-
 const analyticsView = {
     month: new Date().getMonth(),
     year: new Date().getFullYear(),
@@ -161,21 +141,23 @@ let currentWidgetEditingId = null;
 let currentWidgetColor = 'green';
 let widgetSortable = null;
 
-const PARTICLE_BASE_COUNT = PERFORMANCE_PROFILE.isLowPower ? 6 : 10;
-const PARTICLE_MIN_COUNT = PERFORMANCE_PROFILE.isLowPower ? 3 : 6;
+const PARTICLE_BASE_COUNT = 10;
+const PARTICLE_MIN_COUNT = 6;
 const particleSystem = {
     canvas: null,
     ctx: null,
     particles: [],
     animationId: null,
     resizeHandler: null,
-    visibilityHandler: null,
     color: 'rgba(216, 255, 154, 0.28)',
     displayWidth: 0,
     displayHeight: 0,
     baseSpeed: 0
 };
 let particleResizeTimer = null;
+
+const DEBUG_UI = false; // Set to true to enable extensive UI debugging
+const ENABLE_GLASS_DEBUG = false;
 
 const HAPTIC_PATTERNS = {
     button: 18,
@@ -253,7 +235,7 @@ function debugLog(message, ...args) {
     }
 }
 
-const START_LOG_ENABLED = DEBUG_UI;
+const START_LOG_ENABLED = true;
 function logStartButton(step, payload = {}) {
     if (!START_LOG_ENABLED) return;
     try {
@@ -653,6 +635,10 @@ function initializeApp() {
     }
     
     ensureAchievements();
+    ensureSettings();
+    applyThemeColor(appData.settings.themeColor, { persist: false });
+    updateSettingsUI();
+    
     ensureWidgets();
     
     renderHabits();
@@ -944,10 +930,6 @@ function setupAnimatedLogo() {
     
     const path = logo.querySelector('#morphPath');
     if (!path) return;
-    if (PERFORMANCE_PROFILE.prefersReducedMotion) {
-        path.setAttribute('d', 'M100 32 Q168 100 100 168 Q32 100 100 32Z');
-        return;
-    }
     
     // Создаем более сложную морфинг анимацию с помощью JavaScript
     let time = 0;
@@ -1079,9 +1061,7 @@ function setupMainScreenAnimation() {
 // ═══════════════════════════════════════════════════════════════
 
 function setupEventListeners() {
-    if (supportsHaptics()) {
-        setupHapticFeedback();
-    }
+    setupHapticFeedback();
 
     // Hero screen
     const startBtn = document.getElementById('startBtn');
@@ -3788,10 +3768,6 @@ function scheduleParticleResize() {
 function setupBackgroundParticles() {
     const canvas = document.getElementById('bgParticles');
     if (!canvas) return;
-    if (PERFORMANCE_PROFILE.prefersReducedMotion) {
-        canvas.classList.add('particles-disabled');
-        return;
-    }
 
     particleSystem.canvas = canvas;
     particleSystem.ctx = canvas.getContext('2d', { alpha: true });
@@ -3802,20 +3778,6 @@ function setupBackgroundParticles() {
     if (!particleSystem.resizeHandler) {
         particleSystem.resizeHandler = () => scheduleParticleResize();
         window.addEventListener('resize', particleSystem.resizeHandler);
-    }
-
-    if (!particleSystem.visibilityHandler) {
-        particleSystem.visibilityHandler = () => {
-            if (document.hidden) {
-                if (particleSystem.animationId) {
-                    cancelAnimationFrame(particleSystem.animationId);
-                    particleSystem.animationId = null;
-                }
-            } else {
-                startParticleAnimation();
-            }
-        };
-        document.addEventListener('visibilitychange', particleSystem.visibilityHandler);
     }
 }
 
