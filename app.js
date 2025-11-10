@@ -291,6 +291,7 @@ function updateParticleVelocity(particle, baseSpeed) {
 
 const appData = {
     achievements: [],
+    habits: [],
     widgets: [],
     dailyPlan: {
         affirmation: false,
@@ -2342,6 +2343,9 @@ function loadData() {
         try {
             const parsed = JSON.parse(saved);
             Object.assign(appData, parsed);
+            if (!Array.isArray(appData.habits)) {
+                appData.habits = [];
+            }
             
             // Миграция данных для совместимости
             if (!appData.dailyPlan) {
