@@ -1,24 +1,22 @@
 {
   "name": "LifeTrack — Трекер Привычек",
   "short_name": "LifeTrack",
-  "id": "./?source=pwa&v=20251110",
   "description": "Геймифицированный трекер привычек с системой достижений и уровней",
-  "start_url": "./?source=pwa&v=20251110",
+  "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0f1412",
   "theme_color": "#d8ff9a",
   "orientation": "portrait",
-  "version": "2025.11.10",
   "icons": [
     {
-      "src": "icon-192.png?v=20251110",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png?v=20251110",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
